@@ -1,0 +1,21 @@
+# Python関連
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+# 環境変数ファイル
+env
+prod.env
+# IDEやエディタ関連
+.vscode/
+# ログファイル
+*.log
+# カバレッジレポート
+coverage.xml
+# キャッシュ
+.pytest_cache/
+.coverage
+*.coverage
+# 特定フォルダ,ファイル
+push_to_ecr.sh
+.venv
