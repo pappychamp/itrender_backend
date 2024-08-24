@@ -1,11 +1,6 @@
 import os
-from asyncio import current_task
 
-from sqlalchemy.ext.asyncio import (
-    AsyncSession,
-    async_scoped_session,
-    create_async_engine,
-)
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 POSTGRES_USER = os.environ.get("POSTGRES_USER")
