@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 
 import pytz
-from sqlalchemy import Column, DateTime, ForeignKey, String, Table, Text, Integer
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Table, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -50,9 +50,9 @@ class TrendData(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, nullable=False)
     site_id = Column(UUID(as_uuid=True), ForeignKey("sites.id"), nullable=False)
     title = Column(String(255), nullable=False)
-    ranking = Column(Integer, nullable=True)
+    ranking = Column(Integer, nullable=False)
     category = Column(String(255), nullable=True)
-    published_at = Column(DateTime(timezone=True), nullable=False)
+    published_at = Column(DateTime(timezone=True), nullable=True)
     url = Column(String(255), nullable=True)
     embed_html = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.now(pytz.timezone("Asia/Tokyo")), nullable=False)
