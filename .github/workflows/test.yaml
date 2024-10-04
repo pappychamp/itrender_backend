@@ -1,0 +1,30 @@
+name: Pytest
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  pytest_coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build and Start Services
+      run: |
+        docker compose build
+        docker compose up -d
+        
+    - name: Run pytest
+      run: |
+        set -eo pipefail 
+        docker container exec test-backend pytest --junitxml=pytest.xml --cov-report=term-missing --cov=src tests/ | tee pytest-coverage.txt
+        
+    - name: Pytest coverage comment
+      uses: MishaKav/pytest-coverage-comment@main
+      with:
+        pytest-coverage-path: ./pytest-coverage.txt
+        junitxml-path: ./pytest.xml
