@@ -1,5 +1,6 @@
 import uuid
 from datetime import date, datetime
+from typing import AsyncGenerator
 
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
@@ -14,7 +15,7 @@ TEST_DB_URL = "postgresql+asyncpg://postgres:postgres@test-db:5432/db-container"
 
 
 @pytest_asyncio.fixture
-async def async_client() -> AsyncClient:
+async def async_client() -> AsyncGenerator[AsyncSession, None]:
     # Async用のengineとsessionを作成
     async_engine = create_async_engine(TEST_DB_URL, echo=False)
     async_session = sessionmaker(autocommit=False, autoflush=False, bind=async_engine, class_=AsyncSession)
