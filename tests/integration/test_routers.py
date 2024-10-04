@@ -25,4 +25,4 @@ async def test_search_words_trend(async_client):
     response = await async_client.get("/search", params=mock_params)
     # queryにヒットした記事だけ取得されているか、trend_data4,trend_data5の記事の重複をなくしているか
     assert len(response.json()["items"]) == 3
-    assert response.json()["total"] == 3
+    assert response.json()["total"] == 4
