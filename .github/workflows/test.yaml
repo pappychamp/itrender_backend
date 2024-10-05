@@ -1,9 +1,9 @@
 name: Pytest
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
+      - feature/*
 
 jobs:
   pytest_coverage:
