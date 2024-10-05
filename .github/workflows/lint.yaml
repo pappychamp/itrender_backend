@@ -1,9 +1,9 @@
 name: Flake8 Lint
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
+      - feature/*
 
 jobs:
   flake8-lint:
