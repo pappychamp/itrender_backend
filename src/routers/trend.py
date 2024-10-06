@@ -29,7 +29,7 @@ async def list_latest_trend(session: AsyncSession = Depends(get_db)):
             grouped_data[site_name] = list(items)
         return {filter_date: grouped_data}
     except Exception as e:
-        logger.error(f"{str(e)}")
+        logger.info(f"{str(e)}")
         raise HTTPException(status_code=500, detail={})
 
 
@@ -39,7 +39,7 @@ async def list_site_trend(site_name: str, filter_date: date, session: AsyncSessi
         response = await get_site_trend_data(site_name, filter_date, session)
         return response
     except Exception as e:
-        logger.error(f"{str(e)}")
+        logger.info(f"{str(e)}")
         raise HTTPException(status_code=500, detail={})
 
 
@@ -54,5 +54,5 @@ async def search_words_trend(
         response = await get_filter_word_trend_data(q, session)
         return paginate(response, Params(size=size, page=page))
     except Exception as e:
-        logger.error(f"{str(e)}")
+        logger.info(f"{str(e)}")
         raise HTTPException(status_code=500, detail={})
