@@ -26,6 +26,8 @@ class TestListLatestTrend:
 
     async def test_failure(self, async_client, mocker):
         mock_get_latest_date = mocker.patch("src.routers.trend.get_latest_date")
+        # logger.error をモック
+        mock_logger = mocker.patch("src.routers.trend.logger.error")
         mock_get_latest_date.side_effect = Exception("new exception")
 
         mock_get_all_site_trend_data = mocker.patch("src.routers.trend.get_all_site_trend_data")
@@ -35,6 +37,8 @@ class TestListLatestTrend:
         mock_get_latest_date.assert_called_once()
         mock_get_all_site_trend_data.assert_not_called()
         assert response.status_code == 500
+        # logger.errorが適切に呼び出されたか確認
+        mock_logger.assert_called_once()
 
 
 # list_site_trendのテスト
@@ -57,6 +61,8 @@ class TestListSiteTrend:
     async def test_failure(self, async_client, mocker):
         mock_site_name = "test"
         mock_filter_date = date(2024, 1, 1)
+        # logger.error をモック
+        mock_logger = mocker.patch("src.routers.trend.logger.error")
 
         mock_get_site_trend_data = mocker.patch("src.routers.trend.get_site_trend_data")
         mock_get_site_trend_data.side_effect = Exception("new exception")
@@ -65,12 +71,18 @@ class TestListSiteTrend:
         mock_get_site_trend_data.assert_called_once()
         mock_get_site_trend_data.assert_called_once_with(mock_site_name, mock_filter_date, ANY)  # sessionをANYに
         assert response.status_code == 500
+        # logger.errorが適切に呼び出されたか確認
+        mock_logger.assert_called_once()
 
-    async def test_missing_filter_date(self, async_client):
+    async def test_missing_filter_date(self, async_client, mocker):
         mock_site_name = "test"
+        # logger.error をモック
+        mock_logger = mocker.patch("src.main.logger.error")
 
         response = await async_client.get(f"/trend/{mock_site_name}")
         assert response.status_code == 422
+        # logger.errorが適切に呼び出されたか確認
+        mock_logger.assert_called_once()
 
 
 # search_words_trendのテスト
@@ -115,6 +127,8 @@ class TestSearchWordsTrend:
 
     async def test_failure(self, async_client, mocker):
         mock_params = {"q": ["test1", "test2"], "size": 20, "page": 1}
+        # logger.error をモック
+        mock_logger = mocker.patch("src.routers.trend.logger.error")
 
         mock_get_filter_word_trend_data = mocker.patch("src.routers.trend.get_filter_word_trend_data")
         mock_get_filter_word_trend_data.side_effect = Exception("new exception")
@@ -123,15 +137,25 @@ class TestSearchWordsTrend:
         mock_get_filter_word_trend_data.assert_called_once()
         mock_get_filter_word_trend_data.assert_called_once_with(["test1", "test2"], ANY)  # sessionをANYに
         assert response.status_code == 500
+        # logger.errorが適切に呼び出されたか確認
+        mock_logger.assert_called_once()
 
-    async def test_missing_query(self, async_client):
+    async def test_missing_query(self, async_client, mocker):
         mock_params = {"size": 20, "page": 1}
+        # logger.error をモック
+        mock_logger = mocker.patch("src.main.logger.error")
 
         response = await async_client.get("/search", params=mock_params)
         assert response.status_code == 422
+        # logger.errorが適切に呼び出されたか確認
+        mock_logger.assert_called_once()
 
-    async def test_query_limit_exceeded(self, async_client):
+    async def test_query_limit_exceeded(self, async_client, mocker):
         mock_params = {"q": ["test1", "test2", "test3", "test4"], "size": 20, "page": 1}
+        # logger.error をモック
+        mock_logger = mocker.patch("src.main.logger.error")
 
         response = await async_client.get("/search", params=mock_params)
         assert response.status_code == 422
+        # logger.errorが適切に呼び出されたか確認
+        mock_logger.assert_called_once()
