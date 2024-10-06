@@ -5,6 +5,7 @@ alembic
 psycopg[binary]
 pytz==2024.1
 fastapi-pagination==0.12.27
+sentry-sdk[fastapi]==2.15.0
 
 pytest==8.2.2
 pytest-cov==5.0.0

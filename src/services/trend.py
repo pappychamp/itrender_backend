@@ -1,7 +1,6 @@
 from datetime import date
 from typing import List
 
-from fastapi import HTTPException
 from sqlalchemy import and_, desc, or_, select
 from sqlalchemy.engine import Result
 from sqlalchemy.exc import SQLAlchemyError
@@ -18,10 +17,10 @@ async def get_all_site_trend_data(filter_date: date, session: AsyncSession) -> L
         )
         response = result.scalars().unique().all()
         return response
-    except SQLAlchemyError as e:
-        raise HTTPException(status_code=500, detail=f"Database error occurred: {str(e)}")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Unexpected error occurred: {str(e)}")
+    except SQLAlchemyError:
+        raise
+    except Exception:
+        raise
 
 
 async def get_site_trend_data(site_name: str, filter_date: date, session: AsyncSession) -> List[TrendData]:
@@ -35,10 +34,10 @@ async def get_site_trend_data(site_name: str, filter_date: date, session: AsyncS
         )
         response = result.scalars().unique().all()
         return response
-    except SQLAlchemyError as e:
-        raise HTTPException(status_code=500, detail=f"Database error occurred: {str(e)}")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Unexpected error occurred: {str(e)}")
+    except SQLAlchemyError:
+        raise
+    except Exception:
+        raise
 
 
 async def get_latest_date(session: AsyncSession) -> date:
@@ -47,10 +46,10 @@ async def get_latest_date(session: AsyncSession) -> date:
         latest_date_subquery: Result = await session.execute(select(TrendData.created_at).order_by(TrendData.created_at.desc()).limit(1))
         latest_date = latest_date_subquery.scalar()
         return latest_date
-    except SQLAlchemyError as e:
-        raise HTTPException(status_code=500, detail=f"Database error occurred while fetching latest date: {str(e)}")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Unexpected error occurred while fetching latest date: {str(e)}")
+    except SQLAlchemyError:
+        raise
+    except Exception:
+        raise
 
 
 async def get_filter_word_trend_data(filter_words: List[str], session: AsyncSession) -> List[TrendData]:
@@ -90,7 +89,7 @@ async def get_filter_word_trend_data(filter_words: List[str], session: AsyncSess
                 seen_titles.add(trend_data.title)  # titleをセットに追加
 
         return response
-    except SQLAlchemyError as e:
-        raise HTTPException(status_code=500, detail=f"Database error occurred: {str(e)}")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Unexpected error occurred: {str(e)}")
+    except SQLAlchemyError:
+        raise
+    except Exception:
+        raise
