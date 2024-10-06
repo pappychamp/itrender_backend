@@ -14,6 +14,7 @@ from src.routers import trend
 disable_installed_extensions_check()
 
 
+init_sentry()
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -24,8 +25,6 @@ app.add_middleware(
 )
 app.include_router(trend.router)
 add_pagination(app)
-
-init_sentry()
 
 
 @app.exception_handler(RequestValidationError)
