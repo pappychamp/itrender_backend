@@ -11,6 +11,7 @@ prod.env
 # ログファイル
 *.log
 # カバレッジレポート
+pytest-coverage.txt
 coverage.xml
 # キャッシュ
 .pytest_cache/
