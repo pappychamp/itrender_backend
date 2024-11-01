@@ -19,7 +19,7 @@ from src.services.trend import (
 router = APIRouter()
 
 
-@router.get("/trend", response_model=Dict[date, Dict[str, List[TrendListResponse]]])
+@router.get("/api/trend", response_model=Dict[date, Dict[str, List[TrendListResponse]]])
 async def list_latest_trend(session: AsyncSession = Depends(get_db)):
     try:
         filter_date = await get_latest_date(session)
@@ -33,7 +33,7 @@ async def list_latest_trend(session: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=500, detail={})
 
 
-@router.get("/trend/{site_name}", response_model=List[TrendListResponse])
+@router.get("/api/trend/{site_name}", response_model=List[TrendListResponse])
 async def list_site_trend(site_name: str, filter_date: date, session: AsyncSession = Depends(get_db)):
     try:
         response = await get_site_trend_data(site_name, filter_date, session)
@@ -43,7 +43,7 @@ async def list_site_trend(site_name: str, filter_date: date, session: AsyncSessi
         raise HTTPException(status_code=500, detail={})
 
 
-@router.get("/search", response_model=Page[TrendListResponse])
+@router.get("/api/search", response_model=Page[TrendListResponse])
 async def search_words_trend(
     q: Annotated[list[str], Query(max_length=3)],
     size: int = Query(20, description="Number of items per page"),
