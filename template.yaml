@@ -20,12 +20,12 @@ Resources:
       PackageType: Image
       Environment:
         Variables:
-          POSTGRES_USER: !FindInMap [ Variables, !Ref Env, POSTGRES_USER ]
-          POSTGRES_PASSWORD: !FindInMap [ Variables, !Ref Env, POSTGRES_PASSWORD ]
-          POSTGRES_DB: !FindInMap [ Variables, !Ref Env, POSTGRES_DB ]
-          HOST_NAME: !FindInMap [ Variables, !Ref Env, HOST_NAME ]
-          PORT_NUMBER: !FindInMap [ Variables, !Ref Env, PORT_NUMBER ]
-          SENTRY_DSN: !FindInMap [ Variables, !Ref Env, SENTRY_DSN ]
+          POSTGRES_USER: !FindInMap [ Variables, !Ref Env, POSTGRESUSER ]
+          POSTGRES_PASSWORD: !FindInMap [ Variables, !Ref Env, POSTGRESPASSWORD ]
+          POSTGRES_DB: !FindInMap [ Variables, !Ref Env, POSTGRESDB ]
+          HOST_NAME: !FindInMap [ Variables, !Ref Env, HOSTNAME ]
+          PORT_NUMBER: !FindInMap [ Variables, !Ref Env, PORTNUMBER ]
+          SENTRY_DSN: !FindInMap [ Variables, !Ref Env, SENTRYDSN ]
           ENVIRONMENT: !Ref Env
       Architectures:
       - x86_64
@@ -58,19 +58,19 @@ Resources:
 Mappings:
   Variables:
     dev:
-      POSTGRES_USER: 'postgres'
-      POSTGRES_PASSWORD: 'postgres'
-      POSTGRES_DB: 'db-container'
-      HOST_NAME: 'db'
-      PORT_NUMBER: '5432'
-      SENTRY_DSN: ''
+      POSTGRESUSER: 'postgres'
+      POSTGRESPASSWORD: 'postgres'
+      POSTGRESDB: 'db-container'
+      HOSTNAME: 'db'
+      PORTNUMBER: '5432'
+      SENTRYDSN: ''
     production:
-      POSTGRES_USER: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:username}}'
-      POSTGRES_PASSWORD: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:password}}'
-      POSTGRES_DB: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:dbname}}'
-      HOST_NAME: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:host}}'
-      PORT_NUMBER: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:port}}'
-      SENTRY_DSN: '{{resolve:ssm:/production/SENTRY_DSN/backend}}'
+      POSTGRESUSER: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:username}}'
+      POSTGRESPASSWORD: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:password}}'
+      POSTGRESDB: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:dbname}}'
+      HOSTNAME: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:host}}'
+      PORTNUMBER: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:port}}'
+      SENTRYDSN: '{{resolve:ssm:/production/SENTRY_DSN/backend}}'
 
 Parameters:
   Env:
