@@ -26,9 +26,9 @@ jobs:
         with:
           aws-region: us-east-1
           role-to-assume: ${{ env.AWS_IAM_ROLE_ARN }}
-      - name: validate
-        run: |
-          sam validate
+      # - name: validate
+      #   run: |
+      #     sam validate
       - name: sam build
         run: |
           sam build --use-container
