@@ -18,7 +18,7 @@ class TestListLatestTrend:
         mock_get_all_site_trend_data.return_value = []
 
         # リクエストを実行してレスポンスを確認
-        response = await async_client.get("/trend")
+        response = await async_client.get("/api/trend")
         mock_get_latest_date.assert_called_once()
         mock_get_all_site_trend_data.assert_called_once()
         mock_get_all_site_trend_data.assert_called_once_with(mock_latest_date, ANY)  # sessionをANYに
@@ -33,7 +33,7 @@ class TestListLatestTrend:
         mock_get_all_site_trend_data = mocker.patch("src.routers.trend.get_all_site_trend_data")
         mock_get_all_site_trend_data.return_value = []
 
-        response = await async_client.get("/trend")
+        response = await async_client.get("/api/trend")
         mock_get_latest_date.assert_called_once()
         mock_get_all_site_trend_data.assert_not_called()
         assert response.status_code == 500
@@ -53,7 +53,7 @@ class TestListSiteTrend:
         mock_get_site_trend_data.return_value = []
 
         # リクエストを実行してレスポンスを確認
-        response = await async_client.get(f"/trend/{mock_site_name}", params={"filter_date": mock_filter_date})
+        response = await async_client.get(f"/api/trend/{mock_site_name}", params={"filter_date": mock_filter_date})
         mock_get_site_trend_data.assert_called_once()
         mock_get_site_trend_data.assert_called_once_with(mock_site_name, mock_filter_date, ANY)  # sessionをANYに
         assert response.status_code == 200
@@ -67,7 +67,7 @@ class TestListSiteTrend:
         mock_get_site_trend_data = mocker.patch("src.routers.trend.get_site_trend_data")
         mock_get_site_trend_data.side_effect = Exception("new exception")
 
-        response = await async_client.get(f"/trend/{mock_site_name}", params={"filter_date": mock_filter_date})
+        response = await async_client.get(f"/api/trend/{mock_site_name}", params={"filter_date": mock_filter_date})
         mock_get_site_trend_data.assert_called_once()
         mock_get_site_trend_data.assert_called_once_with(mock_site_name, mock_filter_date, ANY)  # sessionをANYに
         assert response.status_code == 500
@@ -79,7 +79,7 @@ class TestListSiteTrend:
         # logger.error をモック
         mock_logger = mocker.patch("src.main.logger.error")
 
-        response = await async_client.get(f"/trend/{mock_site_name}")
+        response = await async_client.get(f"/api/trend/{mock_site_name}")
         assert response.status_code == 422
         # logger.error が適切に呼び出されたか確認
         mock_logger.assert_called_once()
@@ -97,7 +97,7 @@ class TestSearchWordsTrend:
         mock_get_filter_word_trend_data.return_value = []
 
         # リクエストを実行してレスポンスを確認
-        response = await async_client.get("/search", params=mock_params)
+        response = await async_client.get("/api/search", params=mock_params)
         mock_get_filter_word_trend_data.assert_called_once()
         mock_get_filter_word_trend_data.assert_called_once_with(["test1", "test2"], ANY)  # sessionをANYに
         assert response.status_code == 200
@@ -114,7 +114,7 @@ class TestSearchWordsTrend:
         mock_get_filter_word_trend_data = mocker.patch("src.routers.trend.get_filter_word_trend_data")
         mock_get_filter_word_trend_data.return_value = []
 
-        response = await async_client.get("/search", params=mock_params)
+        response = await async_client.get("/api/search", params=mock_params)
         mock_get_filter_word_trend_data.assert_called_once()
         mock_get_filter_word_trend_data.assert_called_once_with(["test1", "test2"], ANY)  # sessionをANYに
         assert response.status_code == 200
@@ -133,7 +133,7 @@ class TestSearchWordsTrend:
         mock_get_filter_word_trend_data = mocker.patch("src.routers.trend.get_filter_word_trend_data")
         mock_get_filter_word_trend_data.side_effect = Exception("new exception")
 
-        response = await async_client.get("/search", params=mock_params)
+        response = await async_client.get("/api/search", params=mock_params)
         mock_get_filter_word_trend_data.assert_called_once()
         mock_get_filter_word_trend_data.assert_called_once_with(["test1", "test2"], ANY)  # sessionをANYに
         assert response.status_code == 500
@@ -145,7 +145,7 @@ class TestSearchWordsTrend:
         # logger.error をモック
         mock_logger = mocker.patch("src.main.logger.error")
 
-        response = await async_client.get("/search", params=mock_params)
+        response = await async_client.get("/api/search", params=mock_params)
         assert response.status_code == 422
         # logger.error が適切に呼び出されたか確認
         mock_logger.assert_called_once()
@@ -155,7 +155,7 @@ class TestSearchWordsTrend:
         # logger.error をモック
         mock_logger = mocker.patch("src.main.logger.error")
 
-        response = await async_client.get("/search", params=mock_params)
+        response = await async_client.get("/api/search", params=mock_params)
         assert response.status_code == 422
         # logger.error が適切に呼び出されたか確認
         mock_logger.assert_called_once()

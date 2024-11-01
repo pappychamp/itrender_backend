@@ -17,3 +17,4 @@ coverage.xml
 # 特定フォルダ,ファイル
 push_to_ecr.sh
 .venv
+.aws-sam/
