@@ -1,5 +1,5 @@
-FROM python:3.12.5-slim-bullseye AS base
-
+# 開発用のステージ
+FROM python:3.12.5-slim-bullseye AS dev
 RUN mkdir /workspace
 WORKDIR /workspace
 COPY requirements.txt requirements.txt
@@ -7,17 +7,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src /workspace/src
 COPY tests /workspace/tests
 COPY setup.cfg /workspace/setup.cfg
+CMD ["uvicorn", "src.main:app", "--reload", "--host", "0.0.0.0", "--port", "8080"]
 
-# 開発用のステージ
-FROM base AS dev
-CMD ["uvicorn", "src.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+# lambda開発用のステージ
+FROM public.ecr.aws/lambda/python:3.12 AS lambda
 
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY src ./src
+COPY setup.cfg .
 
-# 本番
-# FROM python:3.12.3-alpine3.20
-# RUN mkdir /src
-# WORKDIR /src
-# COPY requirements.txt .
-# COPY src/ .
-
-# RUN pip install -r requirements.txt
+CMD ["src.main.handler"]
