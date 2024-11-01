@@ -1,0 +1,37 @@
+name: build and lambda deploy
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_IAM_ROLE_ARN: ${{ secrets.AWS_IAM_ROLE_ARN }}
+  ECR_REPOSITORY_URI: ${{ secrets.ECR_REPOSITORY_URI }}
+  S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+jobs:
+  push_lambda:
+    runs-on: ubuntu-latest
+    # `permissions` を設定しないと OIDC が使えないので注意
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # AWS 認証
+      - name: aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+          role-to-assume: ${{ env.AWS_IAM_ROLE_ARN }}
+      - name: validate
+        run: |
+          sam validate
+      - name: sam build
+        run: |
+          sam build --use-container
+      - name: sam deploy
+        run: |
+          sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --image-repository ${{ env.ECR_REPOSITORY_URI }} --s3-bucket ${{ env.S3_BUCKET_NAME }}

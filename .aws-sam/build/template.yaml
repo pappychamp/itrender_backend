@@ -1,0 +1,93 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'python3.12
+
+  Sample SAM Template for ITrenderBackendFunction
+
+  '
+Globals:
+  Function:
+    Timeout: 3
+    LoggingConfig:
+      LogFormat: JSON
+Resources:
+  ITrenderBackendFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      Environment:
+        Variables:
+          POSTGRES_USER:
+            Fn::FindInMap:
+            - Variables
+            - Ref: Env
+            - POSTGRES_USER
+          POSTGRES_PASSWORD:
+            Fn::FindInMap:
+            - Variables
+            - Ref: Env
+            - POSTGRES_PASSWORD
+          POSTGRES_DB:
+            Fn::FindInMap:
+            - Variables
+            - Ref: Env
+            - POSTGRES_DB
+          HOST_NAME:
+            Fn::FindInMap:
+            - Variables
+            - Ref: Env
+            - HOST_NAME
+          PORT_NUMBER:
+            Fn::FindInMap:
+            - Variables
+            - Ref: Env
+            - PORT_NUMBER
+          SENTRY_DSN:
+            Fn::FindInMap:
+            - Variables
+            - Ref: Env
+            - SENTRY_DSN
+          ENVIRONMENT:
+            Ref: Env
+      Architectures:
+      - x86_64
+      Events:
+        ITrenderBackend:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+            Cors:
+              AllowOrigins: '''http://localhost:5173'''
+              AllowHeaders: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'''
+              AllowMethods: '''GET,POST,PUT,DELETE,OPTIONS'''
+      ImageUri: itrenderbackendfunction:python3.12-v1
+    Metadata:
+      DockerBuildTarget: lambda
+      DockerContext: /home/taka/App/Trender/backend
+      DockerTag: python3.12-v1
+      Dockerfile: dockerfile
+      SamResourceId: ITrenderBackendFunction
+Mappings:
+  Variables:
+    dev:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: db-container
+      HOST_NAME: db
+      PORT_NUMBER: '5432'
+      SENTRY_DSN: ''
+    production:
+      POSTGRES_USER: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:username}}'
+      POSTGRES_PASSWORD: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:password}}'
+      POSTGRES_DB: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:dbname}}'
+      HOST_NAME: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:host}}'
+      PORT_NUMBER: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:port}}'
+      SENTRY_DSN: '{{resolve:ssm:/production/SENTRY_DSN/backend}}'
+Parameters:
+  Env:
+    Type: String
+    Default: production
+    AllowedValues:
+    - dev
+    - production

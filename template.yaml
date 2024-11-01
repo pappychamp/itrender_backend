@@ -1,0 +1,92 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  python3.12
+
+  Sample SAM Template for ITrenderBackendFunction
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+    # You can add LoggingConfig parameters such as the Logformat, Log Group, and SystemLogLevel or ApplicationLogLevel. Learn more here https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html#sam-function-loggingconfig.
+    LoggingConfig:
+      LogFormat: JSON
+Resources:
+  ITrenderBackendFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      PackageType: Image
+      Environment:
+        Variables:
+          POSTGRES_USER: !FindInMap [ Variables, !Ref Env, POSTGRES_USER ]
+          POSTGRES_PASSWORD: !FindInMap [ Variables, !Ref Env, POSTGRES_PASSWORD ]
+          POSTGRES_DB: !FindInMap [ Variables, !Ref Env, POSTGRES_DB ]
+          HOST_NAME: !FindInMap [ Variables, !Ref Env, HOST_NAME ]
+          PORT_NUMBER: !FindInMap [ Variables, !Ref Env, PORT_NUMBER ]
+          SENTRY_DSN: !FindInMap [ Variables, !Ref Env, SENTRY_DSN ]
+          ENVIRONMENT: !Ref Env
+      Architectures:
+      - x86_64
+      Events:
+        ITrenderBackend:
+          Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+            ApiId: !Ref ITrenderBackendAPI
+    Metadata:
+      Dockerfile: dockerfile
+      DockerContext: .
+      DockerTag: python3.12-v1
+      DockerBuildTarget: lambda
+
+  ITrenderBackendAPI:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Name: ITrenderBackendAPI
+      StageName: api
+      AccessLogSettings:
+        DestinationArn: !GetAtt ApiGatewayLogGroup.Arn
+        Format: '{ "requestId":"$context.requestId", "ip": "$context.identity.sourceIp", "user":"$context.identity.user","requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath", "status":"$context.status", "errorMessage": "$context.error.message", "protocol":"$context.protocol" }'
+  ApiGatewayLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: "/aws/apigateway/backend/access-logs"
+      RetentionInDays: 7
+Mappings:
+  Variables:
+    dev:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
+      POSTGRES_DB: 'db-container'
+      HOST_NAME: 'db'
+      PORT_NUMBER: '5432'
+      SENTRY_DSN: ''
+    production:
+      POSTGRES_USER: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:username}}'
+      POSTGRES_PASSWORD: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:password}}'
+      POSTGRES_DB: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:dbname}}'
+      HOST_NAME: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:host}}'
+      PORT_NUMBER: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:port}}'
+      SENTRY_DSN: '{{resolve:ssm:/production/SENTRY_DSN/backend}}'
+
+Parameters:
+  Env:
+    Type: String
+    Default: production
+    AllowedValues: [dev, production]
+# Outputs:
+#   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+#   # Find out more about other implicit resources you can reference within SAM
+#   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+#   ITrenderBackendApi:
+#     Description: API Gateway endpoint URL for Prod stage for ITrender Backend function
+#     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+#   ITrenderBackendFunction:
+#     Description: ITrender Backend Lambda Function ARN
+#     Value: !GetAtt ITrenderBackendFunction.Arn
+#   ITrenderBackendFunctionIamRole:
+#     Description: Implicit IAM Role created for ITrender Backend function
+#     Value: !GetAtt ITrenderBackendFunctionRole.Arn
