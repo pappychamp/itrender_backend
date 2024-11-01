@@ -70,7 +70,7 @@ Mappings:
       POSTGRESDB: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:dbname}}'
       HOSTNAME: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:host}}'
       PORTNUMBER: '{{resolve:secretsmanager:itrenderDatabaseSecret:SecretString:port}}'
-      SENTRYDSN: '{{resolve:ssm:/production/SENTRY_DSN/backend}}'
+      SENTRYDSN: '{{resolve:ssm:/itrender/SENTRY_DSN/backend}}'
 
 Parameters:
   Env:
