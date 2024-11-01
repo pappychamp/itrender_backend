@@ -3,7 +3,7 @@
 version = 0.1
 
 [default.global.parameters]
-stack_name = "ITrenderBackendFunction"
+stack_name = "sam-backend"
 
 [default.build.parameters]
 parallel = true
