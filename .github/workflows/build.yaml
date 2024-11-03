@@ -1,0 +1,43 @@
+name: ecr push image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  push_ecr:
+    runs-on: ubuntu-latest
+    # `permissions` を設定しないと OIDC が使えないので注意
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # AWS 認証
+    - name: aws credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: us-east-1
+        role-to-assume: ${{ secrets.AWS_IAM_ROLE_ARN }}
+
+    # ECR ログイン
+    - name: ecr login
+      uses: aws-actions/amazon-ecr-login@v2
+      id: login-ecr # outputs で参照するために id を設定
+
+    # Docker イメージを build・push する
+    - name: build and push docker image to ecr
+      env:
+        # ECR レジストリを `aws-actions/amazon-ecr-login` アクションの `outputs.registry` から取得
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        # イメージを push する ECR リポジトリ名
+        REPOSITORY: backend
+        # 任意のイメージタグ
+        # Git のコミットハッシュにしておく
+        IMAGE_TAG: latest
+      run: |
+        docker build . --target lambda --tag ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
+        docker push ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
