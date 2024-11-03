@@ -2,6 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 from src.config import (
+    ENVIRONMENT,
     HOST_NAME,
     PORT_NUMBER,
     POSTGRES_DB,
@@ -17,7 +18,7 @@ DB_URL = "{}://{}:{}@{}:{}/{}".format(
     PORT_NUMBER,
     POSTGRES_DB,
 )
-Engine = create_async_engine(DB_URL, echo=True)
+Engine = create_async_engine(DB_URL, echo=False if ENVIRONMENT == "production" else True)
 Session = sessionmaker(
     autocommit=False,
     autoflush=False,

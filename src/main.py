@@ -9,13 +9,14 @@ from fastapi_pagination.utils import disable_installed_extensions_check
 from mangum import Mangum
 
 from src.logs.logs_setting import logger
-from src.logs.sentry_setting import init_sentry
+
+# from src.logs.sentry_setting import init_sentry
 from src.routers import trend
 
 disable_installed_extensions_check()
 
 
-init_sentry()
+# init_sentry()
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
