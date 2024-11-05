@@ -1,0 +1,50 @@
+{
+  "[python]": {
+    // フォーマッター指定
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    // ファイルを保存するたびに自動的にコードのフォーマット
+    "editor.formatOnSave": true,
+    // インポートの整理
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+  },
+  // black-formatterの一行も文字制限を200字
+  "black-formatter.args": [
+    "--line-length=200"
+  ],
+  // isortはblackのスタイルに従ってインポートが整理
+  "isort.args": [
+    "--profile",
+    "black"
+  ],
+  // flake8の一行も文字制限を200字,無効化するerror
+  "flake8.args": [
+    "--max-line-length=200",
+    "--ignore=E121,E126,E127,E128,E203,E225,E226,E231,E241,E251,E261,E265,E302,E303,E305,E402,E501,E741,W291,W292,W293,W391,W503,W504,F403,B007,B950"
+  ],
+  // 単体テストツールとしてpytestを有効化
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  // ファイル保存時にテスト対象を自動的に探索
+  "python.testing.autoTestDiscoverOnSaveEnabled": true,
+  // pytest実行時の引数設定を追加
+  // --cov: カバレッジ計測の有効化
+  // --cov-report xml: カバレッジ計測レポートをxml形式(coverage.xml)で出力
+  "python.testing.pytestArgs": [
+    "-v",
+    "-s",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=src",
+    "--cov-report",
+    "xml",
+  ],
+  // エディタ上のカバレッジ表示設定
+  // ガター(ブレークポイント等が表示される場所)でのカバレッジ表示有無(default: true)
+  "coverage-gutters.showGutterCoverage": true,
+  // エディタ行でのカバレッジ表示有無(default: false)
+  "coverage-gutters.showLineCoverage": true,
+  // ルーラーでのカバレッジ表示有無(default: false)
+  "coverage-gutters.showRulerCoverage": true
+}
