@@ -3,8 +3,6 @@
 __pycache__/
 *.pyo
 *.pyd
-# IDEやエディタ関連
-.vscode/
 # ログファイル
 *.log
 # カバレッジレポート
